@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${instrumentSans.variable}`}>
       <body className="min-h-screen bg-[#f5f4f1] text-[#1a1714] font-sans">
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
