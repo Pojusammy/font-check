@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { searchFonts } from "@/lib/search";
+import { supabase } from "@/lib/supabase";
 import SearchBar from "@/components/SearchBar";
 import FontResultCard from "@/components/FontResultCard";
-import type { Font, FontAlias } from "@prisma/client";
 
-type FontWithAliases = Font & { aliases: FontAlias[] };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FontWithAliases = any;
 
 interface PageProps {
   searchParams: Promise<{ q?: string }>;
@@ -22,16 +23,18 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 async function getSearchResults(q: string): Promise<FontWithAliases[]> {
   if (!q.trim()) return [];
   const results = await searchFonts(q, 20);
-  const { prisma } = await import("@/lib/prisma");
-  const fonts = await prisma.font.findMany({
-    where: {
-      id: { in: results.map((r) => r.id) },
-      is_active: true,
-    },
-    include: { aliases: true },
-    orderBy: { font_name: "asc" },
-  });
-  return fonts;
+  if (results.length === 0) return [];
+
+  const ids = results.map((r) => r.id);
+  const { data, error } = await supabase
+    .from("fonts")
+    .select("*, aliases:font_aliases(*)")
+    .in("id", ids)
+    .eq("is_active", true)
+    .order("font_name");
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
 }
 
 export default async function SearchPage({ searchParams }: PageProps) {

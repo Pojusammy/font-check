@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { Font, FontAlias } from "@prisma/client";
 import StatusBadge from "./StatusBadge";
 import FontSpecimen from "./FontSpecimen";
 import { interpretLicense, getConfidenceLabel } from "@/lib/license-interpreter";
 
-type FontWithAliases = Font & { aliases: FontAlias[] };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FontWithAliases = any;
 
 interface FontResultCardProps {
   font: FontWithAliases;
