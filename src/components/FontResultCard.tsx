@@ -36,19 +36,22 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
         <div
           className="group cursor-pointer rounded-2xl transition-all duration-150"
           style={{
-            background: "#ffffff",
-            border: "1px solid #e5e1da",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}
         >
           <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-xl text-[#1a1714] group-hover:text-[#2e2825] transition-colors leading-tight">
+                <h3
+                  className="text-xl leading-tight transition-colors"
+                  style={{ color: "var(--text-1)" }}
+                >
                   <FontSpecimen fontName={font.font_name} style={{ fontSize: "inherit" }} />
                 </h3>
                 {font.vendor_name && (
-                  <p className="text-xs text-[#a8a09a] mt-0.5 uppercase tracking-wider">
+                  <p className="text-xs mt-0.5 uppercase tracking-wider" style={{ color: "var(--text-4)" }}>
                     {font.vendor_name}
                   </p>
                 )}
@@ -57,7 +60,7 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
                 <StatusBadge status={font.commercial_use_status} size="sm" />
               </div>
             </div>
-            <p className="text-sm text-[#7a7268] mt-3 line-clamp-2 leading-relaxed">
+            <p className="text-sm mt-3 line-clamp-2 leading-relaxed" style={{ color: "var(--text-3)" }}>
               {interpretation.summary}
             </p>
           </div>
@@ -76,41 +79,41 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
     <div
       className="overflow-hidden rounded-2xl stagger-reveal"
       style={{
-        background: "#ffffff",
-        border: "1px solid #e5e1da",
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
       }}
     >
       {/* Specimen header */}
-      <div className="px-7 pt-9 pb-7" style={{ borderBottom: "1px solid #f0ede8" }}>
+      <div className="px-7 pt-9 pb-7" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
         <div
           className="w-10 h-0.5 mb-6 rounded-full"
           style={{ backgroundColor: accent }}
         />
         <h1
-          className="leading-none tracking-tight text-[#1a1714]"
-          style={{ fontSize: "clamp(2.5rem, 8vw, 4rem)" }}
+          className="leading-none tracking-tight"
+          style={{ fontSize: "clamp(2.5rem, 8vw, 4rem)", color: "var(--text-1)" }}
         >
           <FontSpecimen fontName={font.font_name} style={{ fontSize: "inherit", lineHeight: "inherit", letterSpacing: "inherit" }} />
         </h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-5">
           {font.vendor_name && (
-            <span className="text-xs text-[#a8a09a] uppercase tracking-[0.15em]">
+            <span className="text-xs uppercase tracking-[0.15em]" style={{ color: "var(--text-4)" }}>
               {font.vendor_name}
             </span>
           )}
           {font.source_type && (
             <>
-              <span className="text-[#e5e1da]">·</span>
-              <span className="text-xs text-[#a8a09a] uppercase tracking-[0.15em]">
+              <span style={{ color: "var(--border-2)" }}>·</span>
+              <span className="text-xs uppercase tracking-[0.15em]" style={{ color: "var(--text-4)" }}>
                 {font.source_type.replace(/-/g, " ")}
               </span>
             </>
           )}
           {font.family_name && font.family_name !== font.font_name && (
             <>
-              <span className="text-[#e5e1da]">·</span>
-              <span className="text-xs text-[#a8a09a] uppercase tracking-[0.15em]">
+              <span style={{ color: "var(--border-2)" }}>·</span>
+              <span className="text-xs uppercase tracking-[0.15em]" style={{ color: "var(--text-4)" }}>
                 {font.family_name} family
               </span>
             </>
@@ -119,25 +122,25 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
       </div>
 
       {/* Verdict */}
-      <div className="px-7 py-6" style={{ borderBottom: "1px solid #f0ede8" }}>
-        <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-3">
+      <div className="px-7 py-6" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+        <p className="text-xs uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-4)" }}>
           License verdict
         </p>
-        <p className="text-[#1a1714] leading-relaxed text-[0.9375rem]">
+        <p className="leading-relaxed text-[0.9375rem]" style={{ color: "var(--text-1)" }}>
           {interpretation.summary}
         </p>
       </div>
 
       {/* Status grid */}
-      <div className="grid grid-cols-2" style={{ borderBottom: "1px solid #f0ede8" }}>
-        <div className="px-7 py-5" style={{ borderRight: "1px solid #f0ede8" }}>
-          <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-3">
+      <div className="grid grid-cols-2" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+        <div className="px-7 py-5" style={{ borderRight: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-4)" }}>
             Personal use
           </p>
           <StatusBadge status={font.personal_use_status} size="md" />
         </div>
         <div className="px-7 py-5">
-          <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-3">
+          <p className="text-xs uppercase tracking-[0.15em] mb-3" style={{ color: "var(--text-4)" }}>
             Commercial use
           </p>
           <StatusBadge status={font.commercial_use_status} size="md" />
@@ -146,8 +149,8 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
 
       {/* Links */}
       {(font.official_source_url || font.official_license_url || font.purchase_url) && (
-        <div className="px-7 py-6" style={{ borderBottom: "1px solid #f0ede8" }}>
-          <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-4">
+        <div className="px-7 py-6" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+          <p className="text-xs uppercase tracking-[0.15em] mb-4" style={{ color: "var(--text-4)" }}>
             References
           </p>
           <div className="space-y-3">
@@ -156,11 +159,12 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
                 href={font.official_source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 text-sm text-[#1a1714] hover:text-[#d4a853] transition-colors group"
+                className="flex items-center gap-2.5 text-sm group transition-colors duration-150"
+                style={{ color: "var(--text-1)" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-1)")}
               >
-                <span className="text-[#a8a09a] group-hover:text-[#d4a853] transition-colors group-hover:translate-x-0.5 inline-block transition-transform duration-150">
-                  →
-                </span>
+                <span className="transition-transform duration-150 group-hover:translate-x-0.5 inline-block" style={{ color: "var(--text-4)" }}>→</span>
                 Official source
               </a>
             )}
@@ -169,11 +173,12 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
                 href={font.official_license_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 text-sm text-[#1a1714] hover:text-[#d4a853] transition-colors group"
+                className="flex items-center gap-2.5 text-sm group transition-colors duration-150"
+                style={{ color: "var(--text-1)" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-1)")}
               >
-                <span className="text-[#a8a09a] group-hover:text-[#d4a853] transition-colors group-hover:translate-x-0.5 inline-block transition-transform duration-150">
-                  →
-                </span>
+                <span className="transition-transform duration-150 group-hover:translate-x-0.5 inline-block" style={{ color: "var(--text-4)" }}>→</span>
                 View license
               </a>
             )}
@@ -182,11 +187,12 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
                 href={font.purchase_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 text-sm text-[#1a1714] hover:text-[#d4a853] transition-colors group"
+                className="flex items-center gap-2.5 text-sm group transition-colors duration-150"
+                style={{ color: "var(--text-1)" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-1)")}
               >
-                <span className="text-[#a8a09a] group-hover:text-[#d4a853] transition-colors group-hover:translate-x-0.5 inline-block transition-transform duration-150">
-                  →
-                </span>
+                <span className="transition-transform duration-150 group-hover:translate-x-0.5 inline-block" style={{ color: "var(--text-4)" }}>→</span>
                 Purchase license
               </a>
             )}
@@ -195,12 +201,15 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
       )}
 
       {/* Footer meta */}
-      <div className="px-7 py-4 flex items-center justify-between bg-[#f9f8f5]">
-        <div className="flex items-center gap-3 text-xs text-[#a8a09a]">
+      <div
+        className="px-7 py-4 flex items-center justify-between"
+        style={{ background: "var(--surface-2)" }}
+      >
+        <div className="flex items-center gap-3 text-xs" style={{ color: "var(--text-4)" }}>
           <span>{getConfidenceLabel(font.confidence_level)}</span>
           {font.last_verified_at && (
             <>
-              <span className="text-[#d4cec5]">·</span>
+              <span style={{ color: "var(--border-2)" }}>·</span>
               <span>
                 Verified{" "}
                 {new Date(font.last_verified_at).toLocaleDateString("en-US", {
@@ -213,7 +222,10 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
         </div>
         <Link
           href={`/report?font_id=${font.id}&font_name=${encodeURIComponent(font.font_name)}`}
-          className="text-xs text-[#a8a09a] hover:text-[#4a4540] transition-colors"
+          className="text-xs transition-colors duration-150"
+          style={{ color: "var(--text-4)" }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-2)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--text-4)")}
         >
           Report issue
         </Link>

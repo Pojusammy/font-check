@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -31,9 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrumentSans.variable}`}>
-      <body className="min-h-screen bg-[#f5f4f1] text-[#1a1714] font-sans">
-        {children}
+    <html lang="en" className={`${instrumentSans.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] font-sans">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

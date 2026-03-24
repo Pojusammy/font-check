@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import type { LicenseStatus } from "@prisma/client";
 import StatusBadge from "./StatusBadge";
 
 interface SearchResult {
@@ -55,9 +54,9 @@ export default function SearchSuggestions({
     <div
       className="absolute top-full left-0 right-0 z-50 mt-1.5 rounded-xl overflow-hidden"
       style={{
-        background: "#ffffff",
-        border: "1px solid #e5e1da",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08)",
         animation: `slideDown 160ms var(--ease-out-expo) both`,
       }}
     >
@@ -68,7 +67,7 @@ export default function SearchSuggestions({
           className="absolute left-0 right-0 pointer-events-none"
           style={{
             height: ITEM_HEIGHT,
-            background: "#f5f4f1",
+            background: "var(--surface-2)",
             top: activeIndex * ITEM_HEIGHT,
             transition: `top 180ms var(--ease-spring)`,
             willChange: "top",
@@ -83,12 +82,18 @@ export default function SearchSuggestions({
             key={result.id}
             role="option"
             aria-selected={i === activeIndex}
-            className="flex items-center justify-between px-4 cursor-pointer transition-colors duration-100 hover:bg-[#f9f8f5]"
+            className="flex items-center justify-between px-4 cursor-pointer transition-colors duration-100"
             style={{
               height: ITEM_HEIGHT,
-              borderTop: i > 0 ? "1px solid #f0ede8" : undefined,
+              borderTop: i > 0 ? `1px solid var(--border-subtle)` : undefined,
               zIndex: 1,
               position: "relative",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "var(--surface-2)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
             }}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -96,18 +101,15 @@ export default function SearchSuggestions({
             }}
           >
             <div>
-              <p className="text-sm text-[#1a1714] font-display leading-snug">
+              <p className="text-sm font-display leading-snug" style={{ color: "var(--text-1)" }}>
                 {highlightMatch(result.font_name, query)}
               </p>
               {result.vendor_name && (
-                <p className="text-xs text-[#a8a09a] mt-0.5">{result.vendor_name}</p>
+                <p className="text-xs mt-0.5" style={{ color: "var(--text-4)" }}>{result.vendor_name}</p>
               )}
             </div>
             <div className="ml-3 flex-shrink-0">
-              <StatusBadge
-                status={result.commercial_use_status as LicenseStatus}
-                size="sm"
-              />
+              <StatusBadge status={result.commercial_use_status} size="sm" />
             </div>
           </li>
         ))}

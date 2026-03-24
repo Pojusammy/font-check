@@ -149,9 +149,9 @@ export default function SearchBar({
             spellCheck={false}
             className="search-input-field w-full outline-none transition-all duration-200"
             style={{
-              background: "#ffffff",
-              border: "1px solid #e5e1da",
-              color: "#1a1714",
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              color: "var(--text-1)",
               borderRadius: isLg ? 12 : 10,
               fontSize: isLg ? "1rem" : "0.875rem",
               padding: isLg ? "1rem 9rem 1rem 3rem" : "0.75rem 7.5rem 0.75rem 2.75rem",
@@ -166,8 +166,8 @@ export default function SearchBar({
               padding: isLg ? "0.5rem 1.1rem" : "0.4rem 0.9rem",
               fontSize: isLg ? "0.8125rem" : "0.75rem",
               borderRadius: 8,
-              background: "#1a1714",
-              color: "#ffffff",
+              background: "var(--btn-ink-bg)",
+              color: "var(--btn-ink-text)",
               fontWeight: 600,
               fontFamily: "var(--font-instrument, system-ui, sans-serif)",
               transition: `transform 120ms var(--ease-out-quart), background 150ms var(--ease-smooth)`,
