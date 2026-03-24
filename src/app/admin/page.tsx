@@ -49,15 +49,19 @@ export default async function AdminDashboardPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
-            { label: "Total fonts", value: stats.totalFonts },
-            { label: "Active fonts", value: stats.activeFonts },
-            { label: "Open issues", value: stats.openIssues },
-            { label: "Total reports", value: stats.totalIssues },
+            { label: "Total fonts",   value: stats.totalFonts,  href: "/admin/fonts" },
+            { label: "Active fonts",  value: stats.activeFonts, href: "/admin/fonts" },
+            { label: "Open issues",   value: stats.openIssues,  href: "/admin/issues" },
+            { label: "Total reports", value: stats.totalIssues, href: "/admin/issues" },
           ].map((stat) => (
-            <div key={stat.label} className="card p-4">
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="card p-4 hover:shadow-card-hover transition-shadow"
+            >
               <p className="text-2xl font-bold text-[#1a1a1a]">{stat.value}</p>
               <p className="text-xs text-[#9b9b9b] mt-0.5">{stat.label}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
