@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LicenseStatus {
+  allowed
+  paid_license_required
+  not_allowed
+  limited
+  unknown
+}
+
+enum ConfidenceLevel {
+  high
+  medium
+  low
+}
+
+enum IssueType {
+  incorrect_license_status
+  broken_source_link
+  broken_purchase_link
+  wrong_font_match
+  outdated_information
+  missing_font
+  other
+}
+
+enum IssueStatus {
+  open
+  reviewed
+  resolved
+  dismissed
+}
+
+enum AdminRole {
+  admin
+  super_admin
+}
+
+model Font {
+  id                   String        @id @default(cuid())
+  slug                 String        @unique
+  font_name            String
+  normalized_name      String
+  family_name          String?
+  vendor_name          String?
+  source_type          String?
+  official_source_url  String?
+  official_license_url String?
+  purchase_url         String?
+  personal_use_status  LicenseStatus @default(unknown)
+  commercial_use_status LicenseStatus @default(unknown)
+  simplified_summary   String?       @db.Text
+  internal_notes       String?       @db.Text
+  confidence_level     ConfidenceLevel @default(medium)
+  last_verified_at     DateTime?
+  is_active            Boolean       @default(true)
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+
+  aliases       FontAlias[]
+  issue_reports IssueReport[]
+
+  @@index([normalized_name])
+  @@index([slug])
+  @@map("fonts")
+}
+
+model FontAlias {
+  id                  String   @id @default(cuid())
+  font_id             String
+  alias_name          String
+  normalized_alias_name String
+  created_at          DateTime @default(now())
+
+  font Font @relation(fields: [font_id], references: [id], onDelete: Cascade)
+
+  @@index([normalized_alias_name])
+  @@map("font_aliases")
+}
+
+model IssueReport {
+  id           String      @id @default(cuid())
+  font_id      String?
+  search_query String?
+  issue_type   IssueType
+  message      String      @db.Text
+  user_email   String?
+  status       IssueStatus @default(open)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  font Font? @relation(fields: [font_id], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("issue_reports")
+}
+
+model AdminUser {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password_hash String
+  role          AdminRole @default(admin)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  audit_logs AuditLog[]
+
+  @@map("admin_users")
+}
+
+model AuditLog {
+  id              String   @id @default(cuid())
+  actor_id        String?
+  entity_type     String
+  entity_id       String
+  action          String
+  before_snapshot Json?
+  after_snapshot  Json?
+  created_at      DateTime @default(now())
+
+  actor AdminUser? @relation(fields: [actor_id], references: [id], onDelete: SetNull)
+
+  @@index([entity_type, entity_id])
+  @@map("audit_logs")
+}
