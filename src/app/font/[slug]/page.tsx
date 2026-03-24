@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { getFontBySlug } from "@/lib/search";
 import FontResultCard from "@/components/FontResultCard";
 import SearchBar from "@/components/SearchBar";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -40,7 +39,6 @@ export default async function FontDetailPage({ params }: PageProps) {
             <Link href="/about" className="text-sm text-[#7a7268] dark:text-[#8a7e6e] hover:text-[#1a1714] dark:hover:text-[#f0ece4] px-3 py-1.5 rounded-lg transition-colors">
               About
             </Link>
-            <ThemeToggle />
             <Link href="/report" className="text-sm bg-[#1a1714] dark:bg-[#f0ece4] text-white dark:text-[#111009] px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] dark:hover:bg-[#e4ddd2] transition-colors ml-1">
               Report issue
             </Link>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import HeroTabs from "@/components/HeroTabs";
 import RevealSection from "@/components/RevealSection";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 const marqueeItems = [
   "Helvetica", "Gotham", "Futura", "Gill Sans", "Bodoni",
@@ -36,7 +35,6 @@ export default function HomePage() {
             >
               About
             </Link>
-            <ThemeToggle />
             <Link
               href="/report"
               className="text-sm bg-[#1a1714] dark:bg-[#f0ece4] text-white dark:text-[#111009] px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] dark:hover:bg-[#e4ddd2] transition-colors ml-1"
