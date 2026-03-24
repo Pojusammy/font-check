@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import NavLogo from "@/components/NavLogo";
 
 export const metadata: Metadata = {
   title: "About",
@@ -12,9 +13,7 @@ export default function AboutPage() {
       {/* Nav */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="font-display text-[#1a1714] font-semibold text-base tracking-tight">
-            Font<span className="text-[#d4a853]">.</span>Check
-          </Link>
+          <NavLogo />
           <nav className="flex items-center gap-2">
             <Link href="/report" className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] transition-colors">
               Report issue

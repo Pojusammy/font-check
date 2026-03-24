@@ -1,6 +1,7 @@
 import Link from "next/link";
 import HeroTabs from "@/components/HeroTabs";
 import RevealSection from "@/components/RevealSection";
+import NavLogo from "@/components/NavLogo";
 
 const marqueeItems = [
   "Helvetica", "Gotham", "Futura", "Gill Sans", "Bodoni",
@@ -25,9 +26,7 @@ export default function HomePage() {
       {/* ── Nav ──────────────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="font-display text-[#1a1714] font-semibold text-base tracking-tight">
-            Font<span className="text-[#d4a853]">.</span>Check
-          </Link>
+          <NavLogo />
           <nav className="flex items-center gap-2">
             <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
               About
@@ -49,7 +48,7 @@ export default function HomePage() {
             <div className="flex justify-center mb-8">
               <span className="inline-flex items-center gap-2 text-xs text-[#7a7268] bg-white border border-[#e5e1da] px-4 py-1.5 rounded-full shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#52b788] inline-block" />
-                501 fonts tracked — updated regularly
+                589 fonts tracked — updated regularly
               </span>
             </div>
 

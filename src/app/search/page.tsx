@@ -4,6 +4,7 @@ import { searchFonts } from "@/lib/search";
 import { supabase } from "@/lib/supabase";
 import SearchBar from "@/components/SearchBar";
 import FontResultCard from "@/components/FontResultCard";
+import NavLogo from "@/components/NavLogo";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FontWithAliases = any;
@@ -47,9 +48,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
       {/* ── Nav ── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="font-display text-[#1a1714] font-semibold text-base tracking-tight">
-            Font<span className="text-[#d4a853]">.</span>Check
-          </Link>
+          <NavLogo />
           <nav className="flex items-center gap-2">
             <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
               About

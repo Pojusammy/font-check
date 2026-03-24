@@ -45,7 +45,7 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-xl text-[#1a1714] group-hover:text-[#2e2825] transition-colors leading-tight">
-                  <FontSpecimen fontName={font.font_name} style={{ fontSize: "inherit" }} />
+                  <FontSpecimen fontName={font.font_name} sourceType={font.source_type} style={{ fontSize: "inherit" }} />
                 </h3>
                 {font.vendor_name && (
                   <p className="text-xs text-[#a8a09a] mt-0.5 uppercase tracking-wider">
@@ -88,7 +88,7 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
           className="leading-none tracking-tight text-[#1a1714]"
           style={{ fontSize: "clamp(2.5rem, 8vw, 4rem)" }}
         >
-          <FontSpecimen fontName={font.font_name} style={{ fontSize: "inherit", lineHeight: "inherit", letterSpacing: "inherit" }} />
+          <FontSpecimen fontName={font.font_name} sourceType={font.source_type} style={{ fontSize: "inherit", lineHeight: "inherit", letterSpacing: "inherit" }} />
         </h1>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-5">
           {font.vendor_name && (
