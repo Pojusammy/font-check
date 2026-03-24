@@ -28,6 +28,9 @@ yarn-error.log*
 *.pem
 .vercel
 
+# Claude Code local settings (may contain secrets in permission rules)
+.claude/settings.local.json
+
 # prisma
 prisma/dev.db
 prisma/dev.db-journal
