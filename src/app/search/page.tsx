@@ -42,19 +42,19 @@ export default async function SearchPage({ searchParams }: PageProps) {
   const results = await getSearchResults(q);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f5f4f1] dark:bg-[#111009]">
+    <div className="min-h-screen flex flex-col bg-[#f5f4f1]">
 
       {/* ── Nav ── */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#1a1814]/90 backdrop-blur-md border-b border-[#e5e1da] dark:border-[#2e2924]">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="font-display text-[#1a1714] dark:text-[#f0ece4] font-semibold text-base tracking-tight">
+          <Link href="/" className="font-display text-[#1a1714] font-semibold text-base tracking-tight">
             Font<span className="text-[#d4a853]">.</span>Check
           </Link>
-          <nav className="flex items-center gap-1">
-            <Link href="/about" className="text-sm text-[#7a7268] dark:text-[#8a7e6e] hover:text-[#1a1714] dark:hover:text-[#f0ece4] px-3 py-1.5 rounded-lg transition-colors">
+          <nav className="flex items-center gap-2">
+            <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
               About
             </Link>
-            <Link href="/report" className="text-sm bg-[#1a1714] dark:bg-[#f0ece4] text-white dark:text-[#111009] px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] dark:hover:bg-[#e4ddd2] transition-colors ml-1">
+            <Link href="/report" className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] transition-colors">
               Report issue
             </Link>
           </nav>
@@ -72,7 +72,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
           {/* Results */}
           {q ? (
             <div>
-              <p className="text-xs text-[#a8a09a] dark:text-[#5a5048] uppercase tracking-[0.15em] mb-5">
+              <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-5">
                 {results.length === 0
                   ? `No results for "${q}"`
                   : `${results.length} result${results.length !== 1 ? "s" : ""} for "${q}"`}
@@ -85,15 +85,12 @@ export default async function SearchPage({ searchParams }: PageProps) {
                   ))}
                 </div>
               ) : (
-                <div
-                  className="rounded-2xl p-12 text-center bg-white dark:bg-[#1a1814] border border-[#e5e1da] dark:border-[#2e2924]"
-                  style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
-                >
-                  <p className="font-display text-4xl text-[#d4cec5] dark:text-[#3d3930] mb-5">?</p>
-                  <h3 className="font-semibold text-[#1a1714] dark:text-[#f0ece4] mb-2 text-sm">Font not found</h3>
-                  <p className="text-sm text-[#7a7268] dark:text-[#8a7e6e] mb-6 max-w-xs mx-auto">
-                    We don&apos;t have license data for &quot;{q}&quot; yet. You can
-                    request it be added.
+                <div className="rounded-2xl p-12 text-center bg-white border border-[#e5e1da]"
+                  style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                  <p className="font-display text-4xl text-[#d4cec5] mb-5">?</p>
+                  <h3 className="font-semibold text-[#1a1714] mb-2 text-sm">Font not found</h3>
+                  <p className="text-sm text-[#7a7268] mb-6 max-w-xs mx-auto">
+                    We don&apos;t have license data for &quot;{q}&quot; yet. You can request it be added.
                   </p>
                   <Link
                     href={`/report?search_query=${encodeURIComponent(q)}&issue_type=missing_font`}
@@ -106,14 +103,14 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </div>
           ) : (
             <div className="text-center py-16">
-              <p className="text-sm text-[#a8a09a] dark:text-[#5a5048]">Enter a font name above to search.</p>
+              <p className="text-sm text-[#a8a09a]">Enter a font name above to search.</p>
             </div>
           )}
         </div>
       </main>
 
-      <footer className="border-t border-[#e5e1da] dark:border-[#2e2924] py-8 px-6 mt-auto bg-white dark:bg-[#1a1814]">
-        <div className="max-w-6xl mx-auto text-xs text-[#a8a09a] dark:text-[#5a5048] text-center">
+      <footer className="border-t border-[#e5e1da] py-8 px-6 mt-auto bg-white">
+        <div className="max-w-6xl mx-auto text-xs text-[#a8a09a] text-center">
           Font License Checker — general guidance only, not legal advice
         </div>
       </footer>
