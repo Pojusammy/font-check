@@ -104,6 +104,14 @@ export default function FontUpload() {
       return;
     }
 
+    const MAX_SIZE_MB = 10;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setError(`File is too large. Maximum size is ${MAX_SIZE_MB} MB.`);
+      setState("error");
+      triggerHaptic("error");
+      return;
+    }
+
     setState("parsing");
     setError(null);
     setFontInfo(null);

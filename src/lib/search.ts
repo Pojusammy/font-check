@@ -1,11 +1,13 @@
 import { prisma } from "./prisma";
 
+const MAX_QUERY_LENGTH = 100;
+const SLUG_PATTERN = /^[a-z0-9-]+$/;
+
 export async function searchFonts(query: string, limit = 10) {
   if (!query || query.trim().length === 0) return [];
 
-  const q = query.trim();
+  const q = query.trim().slice(0, MAX_QUERY_LENGTH);
 
-  // Search across font_name and normalized_name using ILIKE
   const fonts = await prisma.font.findMany({
     where: {
       is_active: true,
@@ -42,10 +44,12 @@ export async function searchFonts(query: string, limit = 10) {
 }
 
 export async function getFontBySlug(slug: string) {
+  if (!slug || !SLUG_PATTERN.test(slug) || slug.length > 120) {
+    return null;
+  }
+
   return prisma.font.findUnique({
     where: { slug, is_active: true },
-    include: {
-      aliases: true,
-    },
+    include: { aliases: true },
   });
 }

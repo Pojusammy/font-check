@@ -2,6 +2,12 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
+// Validate SESSION_SECRET at startup
+const SESSION_SECRET = process.env.SESSION_SECRET;
+if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
+  throw new Error("SESSION_SECRET env var must be set and at least 32 characters long.");
+}
+
 export interface SessionData {
   adminId?: string;
   adminEmail?: string;
@@ -9,14 +15,14 @@ export interface SessionData {
   isLoggedIn: boolean;
 }
 
-const sessionOptions = {
-  password: process.env.SESSION_SECRET as string,
+export const sessionOptions = {
+  password: SESSION_SECRET,
   cookieName: "font-checker-admin-session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "lax" as const,
-    maxAge: 60 * 60 * 8, // 8 hours
+    sameSite: "strict" as const,
+    maxAge: 60 * 60 * 4, // 4 hours
   },
 };
 

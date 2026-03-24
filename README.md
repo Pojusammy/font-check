@@ -57,13 +57,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Admin Access
 
-Navigate to `/admin/login` and sign in with the credentials set in `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+Navigate to `/admin/login` and sign in with the credentials you set in `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 
-Default admin if not overridden:
-- Email: `admin@example.com`
-- Password: `admin123`
-
-**Change the password after first login in production.**
+Set strong, unique credentials before running the seed. Never use default or placeholder values in production.
 
 ## Pages
 
