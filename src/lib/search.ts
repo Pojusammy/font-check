@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { supabase } from "./supabase";
 
 const MAX_QUERY_LENGTH = 100;
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
@@ -7,40 +7,20 @@ export async function searchFonts(query: string, limit = 10) {
   if (!query || query.trim().length === 0) return [];
 
   const q = query.trim().slice(0, MAX_QUERY_LENGTH);
+  const normalized = q.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-  const fonts = await prisma.font.findMany({
-    where: {
-      is_active: true,
-      OR: [
-        { font_name: { contains: q, mode: "insensitive" } },
-        { normalized_name: { contains: q.toLowerCase().replace(/[^a-z0-9]/g, ""), mode: "insensitive" } },
-        { family_name: { contains: q, mode: "insensitive" } },
-        {
-          aliases: {
-            some: {
-              OR: [
-                { alias_name: { contains: q, mode: "insensitive" } },
-                { normalized_alias_name: { contains: q.toLowerCase().replace(/[^a-z0-9]/g, ""), mode: "insensitive" } },
-              ],
-            },
-          },
-        },
-      ],
-    },
-    select: {
-      id: true,
-      slug: true,
-      font_name: true,
-      vendor_name: true,
-      personal_use_status: true,
-      commercial_use_status: true,
-      confidence_level: true,
-    },
-    take: limit,
-    orderBy: [{ font_name: "asc" }],
-  });
+  const { data, error } = await supabase
+    .from("fonts")
+    .select("id, slug, font_name, vendor_name, personal_use_status, commercial_use_status, confidence_level")
+    .eq("is_active", true)
+    .or(
+      `font_name.ilike.%${q}%,normalized_name.ilike.%${normalized}%,family_name.ilike.%${q}%`
+    )
+    .order("font_name")
+    .limit(limit);
 
-  return fonts;
+  if (error) throw new Error(error.message);
+  return data ?? [];
 }
 
 export async function getFontBySlug(slug: string) {
@@ -48,8 +28,13 @@ export async function getFontBySlug(slug: string) {
     return null;
   }
 
-  return prisma.font.findUnique({
-    where: { slug, is_active: true },
-    include: { aliases: true },
-  });
+  const { data, error } = await supabase
+    .from("fonts")
+    .select("*, aliases:font_aliases(*)")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
+
+  if (error) return null;
+  return data;
 }
