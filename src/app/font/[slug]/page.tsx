@@ -80,7 +80,7 @@ export default async function FontDetailPage({ params }: PageProps) {
                 Also known as
               </p>
               <div className="flex flex-wrap gap-2">
-                {font.aliases.map((alias) => (
+                {font.aliases.map((alias: { id: string; alias_name: string }) => (
                   <span
                     key={alias.id}
                     className="text-xs px-3 py-1 rounded-full font-display"
