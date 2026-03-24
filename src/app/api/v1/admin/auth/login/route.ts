@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
 import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/auth";
@@ -61,7 +61,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Always run bcrypt compare to prevent timing-based user enumeration
-    const admin = await prisma.adminUser.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const { data: admin } = await supabase
+      .from("admin_users")
+      .select("id, email, password_hash, role")
+      .eq("email", email.toLowerCase().trim())
+      .single();
+
     const dummyHash = "$2b$12$invalidsaltinvalidsaltinvalidsa.invalidsaltinvalid";
     const hashToCompare = admin ? admin.password_hash : dummyHash;
     const valid = await bcrypt.compare(password, hashToCompare);

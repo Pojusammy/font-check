@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { getIronSession } from "iron-session";
+import { sessionOptions } from "@/lib/auth";
 import type { SessionData } from "@/lib/auth";
-
-const sessionOptions = {
-  password: process.env.SESSION_SECRET as string,
-  cookieName: "font-checker-admin-session",
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax" as const,
-  },
-};
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,23 +13,30 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   try {
-    const font = await prisma.font.findUnique({ where: { id } });
-    if (!font) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const { data: font, error: fetchError } = await supabase
+      .from("fonts")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    const updated = await prisma.font.update({
-      where: { id },
-      data: { is_active: !font.is_active },
-    });
+    if (fetchError || !font) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    await prisma.auditLog.create({
-      data: {
-        actor_id: session.adminId,
-        entity_type: "font",
-        entity_id: id,
-        action: updated.is_active ? "restore" : "archive",
-        before_snapshot: font as unknown as object,
-        after_snapshot: updated as unknown as object,
-      },
+    const { data: updated, error } = await supabase
+      .from("fonts")
+      .update({ is_active: !font.is_active })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_id: session.adminId,
+      entity_type: "font",
+      entity_id: id,
+      action: updated.is_active ? "restore" : "archive",
+      before_snapshot: font,
+      after_snapshot: updated,
     });
 
     return NextResponse.json({ font: updated });

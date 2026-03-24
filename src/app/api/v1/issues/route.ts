@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -71,22 +71,30 @@ export async function POST(req: NextRequest) {
 
     // Validate font_id if provided
     if (font_id) {
-      const font = await prisma.font.findUnique({ where: { id: font_id } });
+      const { data: font } = await supabase
+        .from("fonts")
+        .select("id")
+        .eq("id", font_id)
+        .single();
       if (!font) {
         return NextResponse.json({ error: "Font not found" }, { status: 404 });
       }
     }
 
-    const report = await prisma.issueReport.create({
-      data: {
+    const { data: report, error } = await supabase
+      .from("issue_reports")
+      .insert({
         font_id: font_id || null,
         search_query: search_query || null,
         issue_type,
         message,
         user_email: user_email || null,
         status: "open",
-      },
-    });
+      })
+      .select("id")
+      .single();
+
+    if (error) throw new Error(error.message);
 
     return NextResponse.json({ success: true, id: report.id }, { status: 201 });
   } catch (err) {

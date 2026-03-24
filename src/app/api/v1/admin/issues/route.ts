@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { getIronSession } from "iron-session";
+import { sessionOptions } from "@/lib/auth";
 import type { SessionData } from "@/lib/auth";
-
-const sessionOptions = {
-  password: process.env.SESSION_SECRET as string,
-  cookieName: "font-checker-admin-session",
-  cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax" as const,
-  },
-};
 
 export async function GET(req: NextRequest) {
   const res = new NextResponse();
@@ -24,21 +15,20 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status") || undefined;
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 100);
+  const from = (page - 1) * limit;
 
-  const where = status ? { status: status as "open" | "reviewed" | "resolved" | "dismissed" } : {};
+  let query = supabase
+    .from("issue_reports")
+    .select("*, font:fonts(id, font_name, slug)", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, from + limit - 1);
 
-  const [issues, total] = await Promise.all([
-    prisma.issueReport.findMany({
-      where,
-      orderBy: { created_at: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
-      include: {
-        font: { select: { id: true, font_name: true, slug: true } },
-      },
-    }),
-    prisma.issueReport.count({ where }),
-  ]);
+  if (status) {
+    query = query.eq("status", status);
+  }
 
-  return NextResponse.json({ issues, total, page, limit });
+  const { data: issues, count, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ issues: issues ?? [], total: count ?? 0, page, limit });
 }

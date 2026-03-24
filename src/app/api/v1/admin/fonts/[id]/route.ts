@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/auth";
 import type { SessionData } from "@/lib/auth";
@@ -16,12 +16,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const session = await requireAdmin(req);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const font = await prisma.font.findUnique({
-    where: { id },
-    include: { aliases: true },
-  });
+  const { data: font, error } = await supabase
+    .from("fonts")
+    .select("*, aliases:font_aliases(*)")
+    .eq("id", id)
+    .single();
 
-  if (!font) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (error || !font) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ font });
 }
 
@@ -32,8 +33,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   try {
     const body = await req.json();
-    const before = await prisma.font.findUnique({ where: { id } });
-    if (!before) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    const { data: before, error: fetchError } = await supabase
+      .from("fonts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !before) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const {
       font_name,
@@ -64,7 +71,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       internal_notes,
       confidence_level,
       is_active,
-      last_verified_at: new Date(),
+      last_verified_at: new Date().toISOString(),
     };
 
     if (font_name && font_name !== before.font_name) {
@@ -72,20 +79,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       updateData.normalized_name = font_name.toLowerCase().replace(/[^a-z0-9]/g, "");
     }
 
-    const font = await prisma.font.update({
-      where: { id },
-      data: updateData,
-    });
+    const { data: font, error } = await supabase
+      .from("fonts")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
 
-    await prisma.auditLog.create({
-      data: {
-        actor_id: session.adminId!,
-        entity_type: "font",
-        entity_id: font.id,
-        action: "update",
-        before_snapshot: before as unknown as object,
-        after_snapshot: font as unknown as object,
-      },
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_id: session.adminId,
+      entity_type: "font",
+      entity_id: font.id,
+      action: "update",
+      before_snapshot: before,
+      after_snapshot: font,
     });
 
     return NextResponse.json({ font });
@@ -101,23 +110,28 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const font = await prisma.font.findUnique({ where: { id } });
-    if (!font) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const { data: font, error: fetchError } = await supabase
+      .from("fonts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !font) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     // Soft delete
-    await prisma.font.update({
-      where: { id },
-      data: { is_active: false },
-    });
+    const { error } = await supabase
+      .from("fonts")
+      .update({ is_active: false })
+      .eq("id", id);
 
-    await prisma.auditLog.create({
-      data: {
-        actor_id: session.adminId!,
-        entity_type: "font",
-        entity_id: id,
-        action: "archive",
-        before_snapshot: font as unknown as object,
-      },
+    if (error) throw new Error(error.message);
+
+    await supabase.from("audit_logs").insert({
+      actor_id: session.adminId,
+      entity_type: "font",
+      entity_id: id,
+      action: "archive",
+      before_snapshot: font,
     });
 
     return NextResponse.json({ success: true });
