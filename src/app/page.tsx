@@ -41,7 +41,7 @@ export default function HomePage() {
       <main className="flex-1">
 
         {/* ── Hero ─────────────────────────────────────── */}
-        <section className="flex flex-col items-center justify-center px-6 pt-20 pb-16">
+        <section className="relative z-10 flex flex-col items-center justify-center px-6 pt-20 pb-16">
           <div className="w-full max-w-2xl text-center">
 
             {/* Announcement pill */}

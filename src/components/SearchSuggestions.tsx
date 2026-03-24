@@ -52,7 +52,7 @@ export default function SearchSuggestions({
 
   return (
     <div
-      className="absolute top-full left-0 right-0 z-50 mt-1.5 rounded-xl overflow-hidden"
+      className="absolute top-full left-0 right-0 z-50 mt-1.5 rounded-xl overflow-hidden text-left"
       style={{
         background: "#ffffff",
         border: "1px solid #e5e1da",
