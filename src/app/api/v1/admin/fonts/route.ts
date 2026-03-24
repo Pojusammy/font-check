@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { randomUUID } from "crypto";
 import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/auth";
 import type { SessionData } from "@/lib/auth";
@@ -77,9 +78,11 @@ export async function POST(req: NextRequest) {
     const slug = slugify(font_name);
     const normalized_name = normalize(font_name);
 
+    const now = new Date().toISOString();
     const { data: font, error } = await supabase
       .from("fonts")
       .insert({
+        id: randomUUID(),
         slug,
         font_name,
         normalized_name,
@@ -94,7 +97,9 @@ export async function POST(req: NextRequest) {
         simplified_summary,
         internal_notes,
         confidence_level: confidence_level || "medium",
-        last_verified_at: new Date().toISOString(),
+        last_verified_at: now,
+        created_at: now,
+        updated_at: now,
       })
       .select()
       .single();
@@ -103,7 +108,9 @@ export async function POST(req: NextRequest) {
 
     // Log audit
     await supabase.from("audit_logs").insert({
+      id: randomUUID(),
       actor_id: session.adminId,
+      created_at: new Date().toISOString(),
       entity_type: "font",
       entity_id: font.id,
       action: "create",

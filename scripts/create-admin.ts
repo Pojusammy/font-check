@@ -6,6 +6,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
+import { randomUUID } from "crypto";
 const email = process.argv[2];
 const password = process.argv[3];
 
@@ -35,7 +36,7 @@ async function main() {
   const { data, error } = await supabase
     .from("admin_users")
     .upsert(
-      { email: email.toLowerCase().trim(), password_hash, role: "super_admin" },
+      { id: randomUUID(), email: email.toLowerCase().trim(), password_hash, role: "super_admin", created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
       { onConflict: "email" }
     )
     .select("id, email, role")

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { randomUUID } from "crypto";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -81,15 +82,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const now = new Date().toISOString();
     const { data: report, error } = await supabase
       .from("issue_reports")
       .insert({
+        id: randomUUID(),
         font_id: font_id || null,
         search_query: search_query || null,
         issue_type,
         message,
         user_email: user_email || null,
         status: "open",
+        created_at: now,
+        updated_at: now,
       })
       .select("id")
       .single();

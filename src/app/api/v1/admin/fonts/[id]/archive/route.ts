@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { randomUUID } from "crypto";
 import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/auth";
 import type { SessionData } from "@/lib/auth";
@@ -31,7 +32,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({
+      id: randomUUID(),
       actor_id: session.adminId,
+      created_at: new Date().toISOString(),
       entity_type: "font",
       entity_id: id,
       action: updated.is_active ? "restore" : "archive",
