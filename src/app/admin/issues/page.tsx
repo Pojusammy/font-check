@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireAdminSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { AdminShell } from "../page";
 import IssueReportTable from "@/components/admin/IssueReportTable";
 
@@ -19,39 +19,45 @@ export default async function AdminIssuesPage({ searchParams }: PageProps) {
   const { status: statusFilter, page: pageStr = "1" } = await searchParams;
   const page = parseInt(pageStr, 10);
   const limit = 25;
+  const from = (page - 1) * limit;
 
   const validStatuses = ["open", "reviewed", "resolved", "dismissed"];
-  const where =
-    statusFilter && validStatuses.includes(statusFilter)
-      ? { status: statusFilter as "open" | "reviewed" | "resolved" | "dismissed" }
-      : {};
 
-  const [issues, total, counts] = await Promise.all([
-    prisma.issueReport.findMany({
-      where,
-      orderBy: { created_at: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
-      include: {
-        font: { select: { id: true, font_name: true, slug: true } },
-      },
-    }),
-    prisma.issueReport.count({ where }),
-    prisma.issueReport.groupBy({
-      by: ["status"],
-      _count: true,
-    }),
+  // Issues list query
+  let issuesQuery = supabase
+    .from("issue_reports")
+    .select("*, font:fonts(id, font_name, slug)", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, from + limit - 1);
+
+  if (statusFilter && validStatuses.includes(statusFilter)) {
+    issuesQuery = issuesQuery.eq("status", statusFilter);
+  }
+
+  // Per-status counts
+  const [
+    { data: issues, count: total },
+    { count: openCount },
+    { count: reviewedCount },
+    { count: resolvedCount },
+    { count: dismissedCount },
+  ] = await Promise.all([
+    issuesQuery,
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }).eq("status", "open"),
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }).eq("status", "reviewed"),
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }).eq("status", "resolved"),
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }).eq("status", "dismissed"),
   ]);
 
-  const countMap = Object.fromEntries(counts.map((c) => [c.status, c._count]));
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil((total ?? 0) / limit);
+  const allCount = (openCount ?? 0) + (reviewedCount ?? 0) + (resolvedCount ?? 0) + (dismissedCount ?? 0);
 
   const tabs = [
-    { label: "All", value: undefined, count: counts.reduce((a, c) => a + c._count, 0) },
-    { label: "Open", value: "open", count: countMap["open"] || 0 },
-    { label: "Reviewed", value: "reviewed", count: countMap["reviewed"] || 0 },
-    { label: "Resolved", value: "resolved", count: countMap["resolved"] || 0 },
-    { label: "Dismissed", value: "dismissed", count: countMap["dismissed"] || 0 },
+    { label: "All", value: undefined, count: allCount },
+    { label: "Open", value: "open", count: openCount ?? 0 },
+    { label: "Reviewed", value: "reviewed", count: reviewedCount ?? 0 },
+    { label: "Resolved", value: "resolved", count: resolvedCount ?? 0 },
+    { label: "Dismissed", value: "dismissed", count: dismissedCount ?? 0 },
   ];
 
   return (
@@ -97,7 +103,7 @@ export default async function AdminIssuesPage({ searchParams }: PageProps) {
           })}
         </div>
 
-        <IssueReportTable issues={issues} />
+        <IssueReportTable issues={issues ?? []} />
 
         {/* Pagination */}
         {totalPages > 1 && (

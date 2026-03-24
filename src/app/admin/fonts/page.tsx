@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireAdminSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { AdminShell } from "../page";
 import StatusBadge from "@/components/StatusBadge";
 
@@ -19,26 +19,22 @@ export default async function AdminFontsPage({ searchParams }: PageProps) {
   const { q = "", page: pageStr = "1" } = await searchParams;
   const page = parseInt(pageStr, 10);
   const limit = 25;
+  const from = (page - 1) * limit;
 
-  const where = q
-    ? {
-        OR: [
-          { font_name: { contains: q, mode: "insensitive" as const } },
-          { vendor_name: { contains: q, mode: "insensitive" as const } },
-        ],
-      }
-    : {};
+  let query = supabase
+    .from("fonts")
+    .select("id, slug, font_name, vendor_name, personal_use_status, commercial_use_status, confidence_level, is_active", { count: "exact" })
+    .order("font_name")
+    .range(from, from + limit - 1);
 
-  const [fonts, total] = await Promise.all([
-    prisma.font.findMany({
-      where,
-      orderBy: { font_name: "asc" },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.font.count({ where }),
-  ]);
+  if (q) {
+    query = query.or(`font_name.ilike.%${q}%,vendor_name.ilike.%${q}%`);
+  }
 
+  const { data: fonts, count, error } = await query;
+  if (error) throw new Error(error.message);
+
+  const total = count ?? 0;
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -108,7 +104,7 @@ export default async function AdminFontsPage({ searchParams }: PageProps) {
               </tr>
             </thead>
             <tbody>
-              {fonts.length === 0 ? (
+              {!fonts || fonts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-10 text-center text-[#9b9b9b]">
                     No fonts found

@@ -2,18 +2,28 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireAdminSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
 async function getStats() {
-  const [totalFonts, activeFonts, openIssues, totalIssues] = await Promise.all([
-    prisma.font.count(),
-    prisma.font.count({ where: { is_active: true } }),
-    prisma.issueReport.count({ where: { status: "open" } }),
-    prisma.issueReport.count(),
+  const [
+    { count: totalFonts },
+    { count: activeFonts },
+    { count: openIssues },
+    { count: totalIssues },
+  ] = await Promise.all([
+    supabase.from("fonts").select("*", { count: "exact", head: true }),
+    supabase.from("fonts").select("*", { count: "exact", head: true }).eq("is_active", true),
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }).eq("status", "open"),
+    supabase.from("issue_reports").select("*", { count: "exact", head: true }),
   ]);
-  return { totalFonts, activeFonts, openIssues, totalIssues };
+  return {
+    totalFonts: totalFonts ?? 0,
+    activeFonts: activeFonts ?? 0,
+    openIssues: openIssues ?? 0,
+    totalIssues: totalIssues ?? 0,
+  };
 }
 
 export default async function AdminDashboardPage() {

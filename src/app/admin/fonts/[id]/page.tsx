@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireAdminSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { AdminShell } from "../../page";
 import FontForm from "@/components/admin/FontForm";
 
@@ -12,7 +12,11 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const font = await prisma.font.findUnique({ where: { id } });
+  const { data: font } = await supabase
+    .from("fonts")
+    .select("font_name")
+    .eq("id", id)
+    .single();
   return { title: font ? `Edit ${font.font_name}` : "Edit Font" };
 }
 
@@ -21,12 +25,13 @@ export default async function AdminEditFontPage({ params }: PageProps) {
   if (!session) redirect("/admin/login");
 
   const { id } = await params;
-  const font = await prisma.font.findUnique({
-    where: { id },
-    include: { aliases: true },
-  });
+  const { data: font, error } = await supabase
+    .from("fonts")
+    .select("*, aliases:font_aliases(*)")
+    .eq("id", id)
+    .single();
 
-  if (!font) notFound();
+  if (error || !font) notFound();
 
   return (
     <AdminShell email={session.adminEmail!}>
