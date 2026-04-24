@@ -302,9 +302,15 @@ export default function FontUpload() {
             <p className="text-2xl text-[#1a1714] leading-none">
               <FontSpecimen fontName={result.font_name || fontInfo.family} style={{ fontSize: "inherit" }} />
             </p>
-            {/* Show matched name if different from raw file name */}
-            {result.matched_name && result.matched_name !== fontInfo.family && (
-              <p className="text-xs text-[#a8a09a] mt-1">
+            {/* Specific variant uploaded (e.g. "Overused Grotesk Light") */}
+            {fontInfo.fullName && fontInfo.fullName !== fontInfo.family && (
+              <p className="text-xs text-[#a8a09a] mt-1">{fontInfo.fullName}</p>
+            )}
+            {/* Matched to a different canonical name than what was in the file */}
+            {result.matched_name &&
+              result.matched_name !== fontInfo.family &&
+              result.matched_name !== fontInfo.fullName && (
+              <p className="text-xs text-[#a8a09a] mt-0.5">
                 Matched as <span className="text-[#7a7268]">{result.matched_name}</span>
               </p>
             )}
