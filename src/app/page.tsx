@@ -47,7 +47,11 @@ export default async function HomePage() {
             <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
               About
             </Link>
-            <Link href="/report" className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] transition-colors">
+            <Link
+              href="/report"
+              className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] active:scale-[0.97]"
+              style={{ transition: "transform 160ms ease-out, background-color 150ms ease" }}
+            >
               Report issue
             </Link>
           </nav>
@@ -58,7 +62,7 @@ export default async function HomePage() {
 
         {/* ── Hero ─────────────────────────────────────── */}
         <section className="relative z-10 flex flex-col items-center justify-center px-6 pt-20 pb-16">
-          <div className="w-full max-w-2xl text-center">
+          <div className="stagger-reveal w-full max-w-2xl text-center">
 
             {/* Announcement pill */}
             <div className="flex justify-center mb-8">
@@ -112,61 +116,68 @@ export default async function HomePage() {
 
         {/* ── Status legend ────────────────────────────── */}
         <section className="py-20 px-6">
-          <RevealSection className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-5 mb-10">
-              <p className="text-xs text-[#a8a09a] uppercase tracking-[0.18em] font-medium whitespace-nowrap">
-                License status guide
-              </p>
-              <div className="flex-1 border-t border-[#e5e1da]" />
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <RevealSection>
+              <div className="flex items-center gap-5 mb-10">
+                <p className="text-xs text-[#a8a09a] uppercase tracking-[0.18em] font-medium whitespace-nowrap">
+                  License status guide
+                </p>
+                <div className="flex-1 border-t border-[#e5e1da]" />
+              </div>
+            </RevealSection>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { status: "Free",    bg: "#f0faf5", border: "#c6ead8", color: "#2a9d6a", desc: "Personal + commercial use allowed" },
                 { status: "Limited", bg: "#fdf8ee", border: "#e8d6a8", color: "#a0782a", desc: "Conditional or restricted usage" },
                 { status: "Paid",    bg: "#fdf2ee", border: "#e8c4b4", color: "#b85a3a", desc: "License purchase required" },
                 { status: "Unknown", bg: "#f5f5f7", border: "#d8d8de", color: "#6a6a72", desc: "Status could not be confirmed" },
-              ].map((item) => (
-                <div
-                  key={item.status}
-                  className="rounded-xl p-5"
-                  style={{ background: item.bg, border: `1px solid ${item.border}` }}
-                >
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                    <span className="font-semibold text-sm" style={{ color: item.color }}>{item.status}</span>
+              ].map((item, i) => (
+                <RevealSection key={item.status} delay={i * 60}>
+                  <div
+                    className="rounded-xl p-5 h-full"
+                    style={{ background: item.bg, border: `1px solid ${item.border}` }}
+                  >
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                      <span className="font-semibold text-sm" style={{ color: item.color }}>{item.status}</span>
+                    </div>
+                    <p className="text-xs text-[#7a7268] leading-relaxed">{item.desc}</p>
                   </div>
-                  <p className="text-xs text-[#7a7268] leading-relaxed">{item.desc}</p>
-                </div>
+                </RevealSection>
               ))}
             </div>
-          </RevealSection>
+          </div>
         </section>
 
         {/* ── How it works ─────────────────────────────── */}
         <section className="py-20 px-6 border-t border-[#e5e1da] bg-white">
-          <RevealSection className="max-w-4xl mx-auto" delay={60}>
-            <div className="flex items-center gap-5 mb-12">
-              <p className="text-xs text-[#a8a09a] uppercase tracking-[0.18em] font-medium whitespace-nowrap">
-                How it works
-              </p>
-              <div className="flex-1 border-t border-[#e5e1da]" />
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <RevealSection>
+              <div className="flex items-center gap-5 mb-12">
+                <p className="text-xs text-[#a8a09a] uppercase tracking-[0.18em] font-medium whitespace-nowrap">
+                  How it works
+                </p>
+                <div className="flex-1 border-t border-[#e5e1da]" />
+              </div>
+            </RevealSection>
             <div className="grid sm:grid-cols-3 gap-10">
               {[
                 { n: "01", title: "Search for a font", desc: "Type the font name. We search across names, families, and aliases with typo tolerance." },
                 { n: "02", title: "Read the verdict",  desc: "Get a plain-language answer about personal and commercial licensing. No legal jargon." },
                 { n: "03", title: "Verify the source", desc: "Every result links directly to the official source. Read the full license whenever you need." },
-              ].map((item) => (
-                <div key={item.n} className="group">
-                  <p className="font-display text-5xl text-[#e5e1da] group-hover:text-[#d4a853] transition-colors duration-300 mb-5 leading-none">
-                    {item.n}
-                  </p>
-                  <h3 className="font-semibold text-[#1a1714] mb-2 text-sm tracking-wide">{item.title}</h3>
-                  <p className="text-sm text-[#7a7268] leading-relaxed">{item.desc}</p>
-                </div>
+              ].map((item, i) => (
+                <RevealSection key={item.n} delay={i * 80}>
+                  <div className="group">
+                    <p className="font-display text-5xl text-[#e5e1da] group-hover:text-[#d4a853] transition-colors duration-300 mb-5 leading-none">
+                      {item.n}
+                    </p>
+                    <h3 className="font-semibold text-[#1a1714] mb-2 text-sm tracking-wide">{item.title}</h3>
+                    <p className="text-sm text-[#7a7268] leading-relaxed">{item.desc}</p>
+                  </div>
+                </RevealSection>
               ))}
             </div>
-          </RevealSection>
+          </div>
         </section>
 
         {/* ── Disclaimer ───────────────────────────────── */}

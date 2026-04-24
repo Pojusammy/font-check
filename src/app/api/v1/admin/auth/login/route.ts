@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
-import { getIronSession } from "iron-session";
-import { sessionOptions } from "@/lib/auth";
-import type { SessionData } from "@/lib/auth";
+import { setSessionCookie } from "@/lib/auth";
 
 // In-memory brute-force protection: 5 attempts per IP per 15 min
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -13,22 +11,15 @@ const WINDOW_MS = 15 * 60 * 1000;
 function checkLoginRateLimit(ip: string): { allowed: boolean; retryAfterSec: number } {
   const now = Date.now();
   const entry = loginAttempts.get(ip);
-
   if (!entry || now > entry.resetAt) {
     loginAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
     return { allowed: true, retryAfterSec: 0 };
   }
-
   if (entry.count >= MAX_ATTEMPTS) {
     return { allowed: false, retryAfterSec: Math.ceil((entry.resetAt - now) / 1000) };
   }
-
   entry.count++;
   return { allowed: true, retryAfterSec: 0 };
-}
-
-function clearLoginAttempts(ip: string) {
-  loginAttempts.delete(ip);
 }
 
 export async function POST(req: NextRequest) {
@@ -41,10 +32,7 @@ export async function POST(req: NextRequest) {
   if (!allowed) {
     return NextResponse.json(
       { error: `Too many login attempts. Try again in ${retryAfterSec} seconds.` },
-      {
-        status: 429,
-        headers: { "Retry-After": String(retryAfterSec) },
-      }
+      { status: 429, headers: { "Retry-After": String(retryAfterSec) } }
     );
   }
 
@@ -60,7 +48,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Always run bcrypt compare to prevent timing-based user enumeration
     const { data: admin } = await supabase
       .from("admin_users")
       .select("id, email, password_hash, role")
@@ -75,17 +62,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // Successful login — clear rate limit for this IP
-    clearLoginAttempts(ip);
+    loginAttempts.delete(ip);
 
     const res = NextResponse.json({ success: true, email: admin.email, role: admin.role });
-    const session = await getIronSession<SessionData>(req, res, sessionOptions);
-
-    session.adminId = admin.id;
-    session.adminEmail = admin.email;
-    session.adminRole = admin.role;
-    session.isLoggedIn = true;
-    await session.save();
+    await setSessionCookie(res, {
+      adminId: admin.id,
+      adminEmail: admin.email,
+      adminRole: admin.role,
+    });
 
     return res;
   } catch (err) {

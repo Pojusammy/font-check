@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { IssueReport, Font, IssueStatus, IssueType } from "@prisma/client";
 
 type IssueWithFont = IssueReport & {
@@ -32,8 +33,11 @@ const statusConfig: Record<IssueStatus, { label: string; classes: string }> = {
 export default function IssueReportTable({ issues }: IssueReportTableProps) {
   const router = useRouter();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const updateStatus = async (id: string, newStatus: IssueStatus) => {
+  const updateStatus = async (e: React.MouseEvent, id: string, newStatus: IssueStatus) => {
+    e.stopPropagation();
     setUpdatingId(id);
     try {
       await fetch(`/api/v1/admin/issues/${id}/resolve`, {
@@ -44,6 +48,18 @@ export default function IssueReportTable({ issues }: IssueReportTableProps) {
       router.refresh();
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const deleteIssue = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/v1/admin/issues/${id}`, { method: "DELETE" });
+      if (res.ok) router.refresh();
+    } finally {
+      setDeletingId(null);
+      setConfirmDeleteId(null);
     }
   };
 
@@ -60,55 +76,36 @@ export default function IssueReportTable({ issues }: IssueReportTableProps) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-[#e5e5e3] bg-[#f8f8f6]">
-            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">
-              Font
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">
-              Type
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">
-              Message
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">
-              Status
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">
-              Date
-            </th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">Font</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">Type</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">Message</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">Status</th>
+            <th className="text-left px-4 py-3 text-xs font-medium text-[#9b9b9b] uppercase tracking-wide">Date</th>
             <th className="px-4 py-3" />
           </tr>
         </thead>
         <tbody>
           {issues.map((issue, i) => {
             const sc = statusConfig[issue.status];
+            const isLast = i === issues.length - 1;
             return (
               <tr
                 key={issue.id}
-                className={`border-b border-[#f0f0ee] hover:bg-[#f8f8f6] transition-colors ${
-                  i === issues.length - 1 ? "border-b-0" : ""
-                }`}
+                onClick={() => router.push(`/admin/issues/${issue.id}`)}
+                className={`border-b border-[#f0f0ee] hover:bg-[#f8f8f6] transition-colors cursor-pointer ${isLast ? "border-b-0" : ""}`}
               >
                 <td className="px-4 py-3">
                   {issue.font ? (
-                    <a
-                      href={`/font/${issue.font.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-[#1a1a1a] hover:underline"
-                    >
-                      {issue.font.font_name}
-                    </a>
+                    <span className="font-medium text-[#1a1a1a]">{issue.font.font_name}</span>
                   ) : (
                     <span className="text-[#9b9b9b]">
                       {issue.search_query ? `"${issue.search_query}"` : "—"}
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-[#6b6b6b]">
-                  {issueTypeLabels[issue.issue_type]}
-                </td>
+                <td className="px-4 py-3 text-[#6b6b6b]">{issueTypeLabels[issue.issue_type]}</td>
                 <td className="px-4 py-3 max-w-xs">
-                  <p className="text-[#6b6b6b] truncate" title={issue.message}>
+                  <p className="text-[#6b6b6b] truncate" title={issue.message ?? undefined}>
                     {issue.message}
                   </p>
                   {issue.user_email && (
@@ -116,9 +113,7 @@ export default function IssueReportTable({ issues }: IssueReportTableProps) {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${sc.classes}`}
-                  >
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${sc.classes}`}>
                     {sc.label}
                   </span>
                 </td>
@@ -129,19 +124,19 @@ export default function IssueReportTable({ issues }: IssueReportTableProps) {
                     year: "numeric",
                   })}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center gap-1">
                     {issue.status === "open" && (
                       <>
                         <button
-                          onClick={() => updateStatus(issue.id, "reviewed")}
+                          onClick={(e) => updateStatus(e, issue.id, "reviewed")}
                           disabled={updatingId === issue.id}
                           className="text-xs text-[#6b6b6b] hover:text-[#1a1a1a] px-2 py-1 rounded-lg hover:bg-[#f0f0ee] transition-colors"
                         >
                           Review
                         </button>
                         <button
-                          onClick={() => updateStatus(issue.id, "dismissed")}
+                          onClick={(e) => updateStatus(e, issue.id, "dismissed")}
                           disabled={updatingId === issue.id}
                           className="text-xs text-[#9b9b9b] hover:text-[#6b6b6b] px-2 py-1 rounded-lg hover:bg-[#f0f0ee] transition-colors"
                         >
@@ -151,13 +146,44 @@ export default function IssueReportTable({ issues }: IssueReportTableProps) {
                     )}
                     {issue.status === "reviewed" && (
                       <button
-                        onClick={() => updateStatus(issue.id, "resolved")}
+                        onClick={(e) => updateStatus(e, issue.id, "resolved")}
                         disabled={updatingId === issue.id}
                         className="text-xs text-[#1a7a4a] hover:text-[#1a5a3a] px-2 py-1 rounded-lg hover:bg-[#f0faf4] transition-colors"
                       >
                         Resolve
                       </button>
                     )}
+                    {confirmDeleteId === issue.id ? (
+                      <>
+                        <button
+                          onClick={(e) => deleteIssue(e, issue.id)}
+                          disabled={deletingId === issue.id}
+                          className="text-xs bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                          {deletingId === issue.id ? "…" : "Confirm"}
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
+                          className="text-xs text-[#9b9b9b] px-1 py-1"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(issue.id); }}
+                        className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    )}
+                    <Link
+                      href={`/admin/issues/${issue.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-[#9b9b9b] hover:text-[#1a1a1a] px-2 py-1 rounded-lg hover:bg-[#f0f0ee] transition-colors"
+                    >
+                      View →
+                    </Link>
                   </div>
                 </td>
               </tr>

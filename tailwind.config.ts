@@ -30,6 +30,12 @@ const config: Config = {
           light: "#e0b86a",
           dim: "rgba(212, 168, 83, 0.12)",
         },
+        brand: {
+          DEFAULT: "#6366F1",
+          dark: "#4F46E5",
+          light: "#818CF8",
+          dim: "rgba(99, 102, 241, 0.08)",
+        },
       },
       animation: {
         marquee: "marquee 35s linear infinite",

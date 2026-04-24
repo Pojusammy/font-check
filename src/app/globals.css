@@ -54,6 +54,13 @@
   --text-4:     #a8a09a;
   --accent:     #d4a853;
   --accent-dim: rgba(212, 168, 83, 0.12);
+
+  /* ── Brand (indigo) tokens ── */
+  --brand:        #6366F1;
+  --brand-dark:   #4F46E5;
+  --brand-light:  #818CF8;
+  --brand-dim:    rgba(99, 102, 241, 0.08);
+  --brand-border: rgba(99, 102, 241, 0.15);
 }
 
 /* ── Reduced motion ───────────────────────────────────────────────── */
@@ -117,13 +124,14 @@
 
   .btn-secondary {
     @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium
-           rounded-lg transition-all duration-150 cursor-pointer;
+           rounded-lg cursor-pointer;
     background: transparent;
     color: var(--text-2);
     border: 1px solid var(--border);
+    transition: transform 160ms ease-out, background-color 150ms ease, border-color 150ms ease;
   }
   .btn-secondary:hover { background: var(--surface-2); border-color: var(--border-2); }
-  .btn-secondary:active { transform: scale(0.97); }
+  .btn-secondary:active { transform: scale(0.97); transition: transform 80ms ease-out, background-color 150ms ease, border-color 150ms ease; }
   .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn-accent {
@@ -205,6 +213,16 @@
   .badge-pulse {
     animation: badgePulse 2.4s var(--ease-smooth) infinite;
   }
+
+  /* ── Brand button ──────────────────────────────── */
+  .btn-brand {
+    @apply inline-flex items-center justify-center text-sm font-semibold
+           transition-all duration-150 cursor-pointer;
+    background: var(--brand);
+    color: #ffffff;
+  }
+  .btn-brand:hover { background: var(--brand-dark); }
+  .btn-brand:active { transform: scale(0.97); }
 }
 
 /* ── Extra keyframes ───────────────────────────────────────────── */

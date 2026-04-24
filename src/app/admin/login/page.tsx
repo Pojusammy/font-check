@@ -23,8 +23,7 @@ export default function AdminLoginPage() {
       });
 
       if (res.ok) {
-        router.push("/admin");
-        router.refresh();
+        window.location.href = "/admin";
       } else {
         const data = await res.json();
         setErrorMsg(data.error || "Invalid credentials.");

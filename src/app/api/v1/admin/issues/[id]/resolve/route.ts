@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { getIronSession } from "iron-session";
-import { sessionOptions } from "@/lib/auth";
-import type { SessionData } from "@/lib/auth";
+
+
+
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const res = new NextResponse();
-  const session = await getIronSession<SessionData>(req, res, sessionOptions);
-  if (!session.isLoggedIn || !session.adminId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!req.headers.get("x-admin-id")) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
 
   try {
     const body = await req.json();

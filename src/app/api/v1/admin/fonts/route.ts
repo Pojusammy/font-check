@@ -1,20 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
-import { getIronSession } from "iron-session";
-import { sessionOptions } from "@/lib/auth";
-import type { SessionData } from "@/lib/auth";
 
-async function requireAdmin(req: NextRequest, res: NextResponse) {
-  const session = await getIronSession<SessionData>(req, res, sessionOptions);
-  if (!session.isLoggedIn || !session.adminId) return null;
-  return session;
-}
+
+
 
 export async function GET(req: NextRequest) {
-  const res = new NextResponse();
-  const session = await requireAdmin(req, res);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!req.headers.get("x-admin-id")) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -50,9 +42,7 @@ function normalize(name: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const res = new NextResponse();
-  const session = await requireAdmin(req, res);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!req.headers.get("x-admin-id")) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const body = await req.json();
@@ -109,7 +99,7 @@ export async function POST(req: NextRequest) {
     // Log audit
     await supabase.from("audit_logs").insert({
       id: randomUUID(),
-      actor_id: session.adminId,
+      actor_id: req.headers.get("x-admin-id") ?? "unknown",
       created_at: new Date().toISOString(),
       entity_type: "font",
       entity_id: font.id,

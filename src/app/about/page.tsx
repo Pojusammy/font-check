@@ -73,7 +73,7 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <section className="card p-6 border-l-4 border-l-amber-400">
+            <section className="rounded-xl p-6" style={{ background: "#FFF1CC", border: "1px solid #FED770" }}>
               <h2 className="text-lg font-semibold text-[#1a1a1a] mb-3">
                 Important disclaimer
               </h2>
@@ -86,7 +86,7 @@ export default function AboutPage() {
                   The information here may be incomplete, simplified, or out of date.
                 </p>
                 <p>
-                  <strong className="text-[#1a1a1a]">Always verify</strong> licensing directly
+                  <strong className="text-[#1a1a1a]">Always verify</strong>{" "}licensing directly
                   with the font&apos;s official publisher before using a font commercially, in client
                   work, in a product, or in any situation where licensing matters.
                 </p>
