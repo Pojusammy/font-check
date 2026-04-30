@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import { getFontBySlug } from "@/lib/search";
 import FontResultCard from "@/components/FontResultCard";
 import SearchBar from "@/components/SearchBar";
-import NavLogo from "@/components/NavLogo";
+import SiteHeader from "@/components/SiteHeader";
+import BackButton from "@/components/BackButton";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -28,35 +29,14 @@ export default async function FontDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[#f5f4f1]">
 
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <NavLogo />
-          <nav className="flex items-center gap-2">
-            <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
-              About
-            </Link>
-            <Link href="/report" className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] transition-colors">
-              Report issue
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1 py-10 px-6">
         <div className="max-w-2xl mx-auto">
 
           {/* Back link */}
           <div className="mb-7">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs text-[#a8a09a] hover:text-[#4a4540] transition-colors uppercase tracking-widest"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to search
-            </Link>
+            <BackButton />
           </div>
 
           {/* Search bar */}

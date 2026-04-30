@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import ReportIssueForm from "@/components/ReportIssueForm";
-import NavLogo from "@/components/NavLogo";
+import SiteHeader from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Report an Issue",
@@ -24,16 +24,7 @@ export default async function ReportPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <NavLogo />
-          <nav className="flex items-center gap-2">
-            <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1 py-12 px-4 sm:px-6">
         <div className="max-w-lg mx-auto">

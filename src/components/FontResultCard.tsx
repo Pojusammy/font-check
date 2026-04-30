@@ -128,7 +128,7 @@ export default function FontResultCard({ font, variant = "full" }: FontResultCar
           <StatusBadge status={font.personal_use_status} size="md" />
         </div>
         <div className="px-7 py-5">
-          <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-3">Commercial use</p>
+          <p className="text-xs text-[#a8a09a] uppercase tracking-[0.15em] mb-3"><span className="sm:hidden">Commercial</span><span className="hidden sm:inline">Commercial use</span></p>
           <StatusBadge status={font.commercial_use_status} size="md" />
         </div>
       </div>

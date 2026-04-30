@@ -1,7 +1,7 @@
 import Link from "next/link";
 import HeroTabs from "@/components/HeroTabs";
 import RevealSection from "@/components/RevealSection";
-import NavLogo from "@/components/NavLogo";
+import SiteHeader from "@/components/SiteHeader";
 import { supabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -39,24 +39,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
 
-      {/* ── Nav ──────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <NavLogo />
-          <nav className="flex items-center gap-2">
-            <Link href="/about" className="text-sm text-[#7a7268] hover:text-[#1a1714] px-3 py-1.5 rounded-lg transition-colors">
-              About
-            </Link>
-            <Link
-              href="/report"
-              className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] active:scale-[0.97]"
-              style={{ transition: "transform 160ms ease-out, background-color 150ms ease" }}
-            >
-              Report issue
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1">
 
@@ -201,6 +184,7 @@ export default async function HomePage() {
             Font<span className="text-[#d4a853]">.</span>Check
           </p>
           <div className="flex items-center gap-7 text-xs text-[#a8a09a]">
+            <Link href="/browse" className="hover:text-[#4a4540] transition-colors">Browse fonts</Link>
             <Link href="/about" className="hover:text-[#4a4540] transition-colors">About</Link>
             <Link href="/report" className="hover:text-[#4a4540] transition-colors">Report issue</Link>
             <Link href="/admin/login" className="hover:text-[#4a4540] transition-colors">Admin</Link>

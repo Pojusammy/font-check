@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import NavLogo from "@/components/NavLogo";
+import SiteHeader from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,16 +11,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#e5e1da]">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <NavLogo />
-          <nav className="flex items-center gap-2">
-            <Link href="/report" className="text-sm bg-[#1a1714] text-white px-4 py-1.5 rounded-full font-medium hover:bg-[#2e2825] transition-colors">
-              Report issue
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="flex-1 py-14 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto prose-custom">
