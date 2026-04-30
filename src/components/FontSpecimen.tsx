@@ -132,7 +132,6 @@ const GOOGLE_FONTS_PREVIEW_MAP: Record<string, string> = {
   "Reforma 1918": "Source Serif 4",
   "Reforma 2018": "Source Sans 3",
   "Produkt": "Source Serif 4",
-  "Harriet": "Crimson Pro",
 
   // ── Sans-serifs (commercial) ──────────────────────────────────────────────
   "Helvetica": "Inter",
