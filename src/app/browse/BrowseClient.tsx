@@ -30,7 +30,7 @@ const CATEGORIES: { value: Category; label: string }[] = [
 ];
 
 const PRICING: { value: Pricing; label: string; activeColor: string }[] = [
-  { value: "all",     label: "All",     activeColor: "#1a1714" },
+  { value: "all",     label: "All",     activeColor: "#171618" },
   { value: "free",    label: "Free",    activeColor: "#1e7a4e" },
   { value: "limited", label: "Limited", activeColor: "#8a6320" },
   { value: "paid",    label: "Paid",    activeColor: "#b85a3a" },
@@ -106,8 +106,9 @@ export default function BrowseClient() {
 
   const [licenseOpen,  setLicenseOpen]  = useState(false);
   const [mobileCatOpen, setMobileCatOpen] = useState(false);
-  const licenseRef   = useRef<HTMLDivElement>(null);
-  const mobileCatRef = useRef<HTMLDivElement>(null);
+  const desktopLicenseRef = useRef<HTMLDivElement>(null);
+  const mobileLicenseRef  = useRef<HTMLDivElement>(null);
+  const mobileCatRef      = useRef<HTMLDivElement>(null);
 
   const handleCategory = useCallback((c: Category) => { setCategory(c); setPage(1); setMobileCatOpen(false); }, []);
   const handlePricing  = useCallback((p: Pricing)  => { setPricing(p);  setPage(1); setLicenseOpen(false);  }, []);
@@ -115,8 +116,10 @@ export default function BrowseClient() {
   // Close dropdowns on outside click
   useEffect(() => {
     function onPointerDown(e: PointerEvent) {
-      if (licenseRef.current   && !licenseRef.current.contains(e.target as Node))   setLicenseOpen(false);
-      if (mobileCatRef.current && !mobileCatRef.current.contains(e.target as Node)) setMobileCatOpen(false);
+      const target = e.target as Node;
+      const inLicense = desktopLicenseRef.current?.contains(target) || mobileLicenseRef.current?.contains(target);
+      if (!inLicense) setLicenseOpen(false);
+      if (mobileCatRef.current && !mobileCatRef.current.contains(target)) setMobileCatOpen(false);
     }
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
@@ -137,14 +140,14 @@ export default function BrowseClient() {
 
   const Checkmark = () => (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-      <path d="M2 6L5 9L10 3" stroke="#1a1714" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2 6L5 9L10 3" stroke="#171618" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
   return (
     <>
       {/* ── Filter bar ──────────────────────────────── */}
-      <div className="sticky top-14 z-30 bg-[#f5f4f1]/95 backdrop-blur-sm">
+      <div className="sticky top-14 z-30 bg-[#f7f7f7]/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-4 sm:py-6">
 
           {/* ── Desktop (sm+): tabs + count + Filter by ──── */}
@@ -157,11 +160,11 @@ export default function BrowseClient() {
                     key={cat.value}
                     onClick={() => handleCategory(cat.value)}
                     className="relative text-[11px] tracking-[0.12em] uppercase transition-colors duration-150 pb-0.5"
-                    style={{ color: active ? "#1a1714" : "#a8a09a", fontWeight: active ? 600 : 400 }}
+                    style={{ color: active ? "#171618" : "#9e9ea3", fontWeight: active ? 600 : 400 }}
                   >
                     {cat.label}
                     {active && (
-                      <span className="absolute inset-x-0 -bottom-[1px] h-px" style={{ background: "#1a1714" }} />
+                      <span className="absolute inset-x-0 -bottom-[1px] h-px" style={{ background: "#171618" }} />
                     )}
                   </button>
                 );
@@ -169,17 +172,17 @@ export default function BrowseClient() {
             </div>
 
             {!loading && !error && (
-              <span className="text-xs text-[#a8a09a] mr-6">
+              <span className="text-xs text-[#9e9ea3] mr-6">
                 {filtered.length.toLocaleString()} font{filtered.length !== 1 ? "s" : ""}
               </span>
             )}
 
             {/* License dropdown */}
-            <div ref={licenseRef} className="relative">
+            <div ref={desktopLicenseRef} className="relative">
               <button
                 onClick={() => setLicenseOpen((o) => !o)}
                 className="flex items-center gap-1.5 text-[11px] tracking-[0.12em] uppercase transition-colors duration-150"
-                style={{ color: pricing !== "all" ? "#1a1714" : "#a8a09a", fontWeight: pricing !== "all" ? 600 : 400 }}
+                style={{ color: pricing !== "all" ? "#171618" : "#9e9ea3", fontWeight: pricing !== "all" ? 600 : 400 }}
               >
                 {pricing !== "all" ? activePricingLabel : "Filter by"}
                 <Chevron open={licenseOpen} />
@@ -191,7 +194,7 @@ export default function BrowseClient() {
           {/* ── Mobile: count left + two dropdowns right ── */}
           <div className="flex sm:hidden items-center">
             {!loading && !error && (
-              <span className="text-xs text-[#a8a09a] flex-1">
+              <span className="text-xs text-[#9e9ea3] flex-1">
                 {filtered.length.toLocaleString()} font{filtered.length !== 1 ? "s" : ""}
               </span>
             )}
@@ -204,8 +207,8 @@ export default function BrowseClient() {
                 className="flex items-center gap-1.5 text-[11px] tracking-[0.12em] uppercase font-medium transition-all duration-150 px-3.5 py-1.5 rounded-full border"
                 style={
                   category !== "all"
-                    ? { background: "#1a1714", borderColor: "#1a1714", color: "#ffffff" }
-                    : { background: "#ffffff", borderColor: "#d4cec5", color: "#7a7268" }
+                    ? { background: "#171618", borderColor: "#171618", color: "#ffffff" }
+                    : { background: "#ffffff", borderColor: "#dadada", color: "#727578" }
                 }
               >
                 {category !== "all" ? activeCategoryLabel : "Category"}
@@ -214,11 +217,11 @@ export default function BrowseClient() {
 
               {mobileCatOpen && (
                 <div
-                  className="absolute right-0 top-[calc(100%+10px)] w-44 rounded-xl overflow-hidden"
-                  style={{ background: "#fff", border: "1px solid #e5e1da", boxShadow: "0 8px 24px rgba(0,0,0,0.10)" }}
+                  className="absolute right-0 top-[calc(100%+10px)] w-44 overflow-hidden"
+                  style={{ borderRadius: "12px", background: "#fff", border: "1px solid #efefef", boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)" }}
                 >
-                  <div className="px-3 py-2 border-b border-[#f0ede8]">
-                    <p className="text-[10px] tracking-[0.14em] uppercase text-[#a8a09a] font-medium">Category</p>
+                  <div className="px-3 py-2 border-b border-[#f5f5f5]">
+                    <p className="text-[10px] tracking-[0.14em] uppercase text-[#9e9ea3] font-medium">Category</p>
                   </div>
                   {CATEGORIES.map((cat) => {
                     const active = category === cat.value;
@@ -226,9 +229,9 @@ export default function BrowseClient() {
                       <button
                         key={cat.value}
                         onClick={() => handleCategory(cat.value)}
-                        className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-100 hover:bg-[#f9f8f5]"
+                        className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-100 hover:bg-[#f7f7f7]"
                       >
-                        <span className="text-xs font-medium" style={{ color: active ? "#1a1714" : "#4a4540" }}>
+                        <span className="text-xs font-medium" style={{ color: active ? "#171618" : "#3a3a3c" }}>
                           {cat.label}
                         </span>
                         {active && <Checkmark />}
@@ -240,14 +243,14 @@ export default function BrowseClient() {
             </div>
 
             {/* License dropdown */}
-            <div ref={licenseRef} className="relative">
+            <div ref={mobileLicenseRef} className="relative">
               <button
                 onClick={() => { setLicenseOpen((o) => !o); setMobileCatOpen(false); }}
                 className="flex items-center gap-1.5 text-[11px] tracking-[0.12em] uppercase font-medium transition-all duration-150 px-3.5 py-1.5 rounded-full border"
                 style={
                   pricing !== "all"
-                    ? { background: "#1a1714", borderColor: "#1a1714", color: "#ffffff" }
-                    : { background: "#ffffff", borderColor: "#d4cec5", color: "#7a7268" }
+                    ? { background: "#171618", borderColor: "#171618", color: "#ffffff" }
+                    : { background: "#ffffff", borderColor: "#dadada", color: "#727578" }
                 }
               >
                 {pricing !== "all" ? activePricingLabel : "License"}
@@ -267,23 +270,23 @@ export default function BrowseClient() {
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="animate-pulse rounded-2xl bg-[#ede9e3] h-24" />
+              <div key={i} className="animate-pulse bg-[#efefef] h-24" style={{ borderRadius: "20px" }} />
             ))}
           </div>
         )}
 
         {error && (
           <div className="text-center py-20">
-            <p className="text-sm text-[#a8a09a]">Failed to load fonts. Please refresh.</p>
+            <p className="text-sm text-[#9e9ea3]">Failed to load fonts. Please refresh.</p>
           </div>
         )}
 
         {!loading && !error && filtered.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-sm text-[#a8a09a]">No fonts match these filters.</p>
+            <p className="text-sm text-[#9e9ea3]">No fonts match these filters.</p>
             <button
               onClick={() => { setCategory("all"); setPricing("all"); setPage(1); }}
-              className="mt-4 text-xs text-[#4a4540] underline underline-offset-2 hover:text-[#1a1714] transition-colors"
+              className="mt-4 text-xs text-[#3a3a3c] underline underline-offset-2 hover:text-[#171618] transition-colors"
             >
               Clear filters
             </button>
@@ -336,8 +339,8 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
       <button
         onClick={() => goTo(page - 1)}
         disabled={page === 1}
-        className={`${btnBase} px-2 gap-1 border border-[#e5e1da] bg-white`}
-        style={{ color: page === 1 ? "#d4cec5" : "#4a4540", cursor: page === 1 ? "not-allowed" : "pointer" }}
+        className={`${btnBase} px-2 gap-1 border border-[#efefef] bg-white`}
+        style={{ color: page === 1 ? "#dadada" : "#3a3a3c", cursor: page === 1 ? "not-allowed" : "pointer" }}
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M7.5 2L4 6l3.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -348,7 +351,7 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
       {/* Page numbers */}
       {pages().map((p, i) =>
         p === "…" ? (
-          <span key={`ellipsis-${i}`} className="min-w-[32px] h-8 flex items-center justify-center text-xs text-[#a8a09a]">…</span>
+          <span key={`ellipsis-${i}`} className="min-w-[32px] h-8 flex items-center justify-center text-xs text-[#9e9ea3]">…</span>
         ) : (
           <button
             key={p}
@@ -356,8 +359,8 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
             className={btnBase}
             style={
               p === page
-                ? { background: "#1a1714", color: "#ffffff", border: "1px solid #1a1714" }
-                : { background: "#ffffff", color: "#4a4540", border: "1px solid #e5e1da" }
+                ? { background: "#171618", color: "#ffffff", border: "1px solid #171618" }
+                : { background: "#ffffff", color: "#3a3a3c", border: "1px solid #efefef" }
             }
           >
             {p}
@@ -369,8 +372,8 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
       <button
         onClick={() => goTo(page + 1)}
         disabled={page === totalPages}
-        className={`${btnBase} px-2 gap-1 border border-[#e5e1da] bg-white`}
-        style={{ color: page === totalPages ? "#d4cec5" : "#4a4540", cursor: page === totalPages ? "not-allowed" : "pointer" }}
+        className={`${btnBase} px-2 gap-1 border border-[#efefef] bg-white`}
+        style={{ color: page === totalPages ? "#dadada" : "#3a3a3c", cursor: page === totalPages ? "not-allowed" : "pointer" }}
       >
         <span className="hidden sm:inline">Next</span>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -386,10 +389,10 @@ function LicenseDropdown({ pricing, onSelect }: { pricing: Pricing; onSelect: (p
   return (
     <div
       className="absolute right-0 top-[calc(100%+10px)] w-44 rounded-xl overflow-hidden"
-      style={{ background: "#fff", border: "1px solid #e5e1da", boxShadow: "0 8px 24px rgba(0,0,0,0.10)" }}
+      style={{ borderRadius: "12px", background: "#fff", border: "1px solid #efefef", boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)" }}
     >
-      <div className="px-3 py-2 border-b border-[#f0ede8]">
-        <p className="text-[10px] tracking-[0.14em] uppercase text-[#a8a09a] font-medium">License type</p>
+      <div className="px-3 py-2 border-b border-[#f5f5f5]">
+        <p className="text-[10px] tracking-[0.14em] uppercase text-[#9e9ea3] font-medium">License type</p>
       </div>
       {PRICING.map((p) => {
         const active = pricing === p.value;
@@ -397,14 +400,14 @@ function LicenseDropdown({ pricing, onSelect }: { pricing: Pricing; onSelect: (p
           <button
             key={p.value}
             onClick={() => onSelect(p.value)}
-            className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-100 hover:bg-[#f9f8f5]"
+            className="w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-100 hover:bg-[#f7f7f7]"
           >
-            <span className="text-xs font-medium" style={{ color: active ? "#1a1714" : "#4a4540" }}>
+            <span className="text-xs font-medium" style={{ color: active ? "#171618" : "#3a3a3c" }}>
               {p.label}
             </span>
             {active && (
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M2 6L5 9L10 3" stroke="#1a1714" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 6L5 9L10 3" stroke="#171618" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
           </button>
@@ -412,10 +415,10 @@ function LicenseDropdown({ pricing, onSelect }: { pricing: Pricing; onSelect: (p
       })}
       {pricing !== "all" && (
         <>
-          <div className="border-t border-[#f0ede8]" />
+          <div className="border-t border-[#f5f5f5]" />
           <button
             onClick={() => onSelect("all")}
-            className="w-full px-4 py-2.5 text-left text-xs text-[#a8a09a] hover:text-[#4a4540] transition-colors duration-100 hover:bg-[#f9f8f5]"
+            className="w-full px-4 py-2.5 text-left text-xs text-[#9e9ea3] hover:text-[#3a3a3c] transition-colors duration-100 hover:bg-[#f7f7f7]"
           >
             Clear filter
           </button>
@@ -432,25 +435,26 @@ function BrowseFontCard({ font }: { font: BrowseFont }) {
   return (
     <Link href={`/font/${font.slug}`}>
       <div
-        className="group cursor-pointer rounded-2xl overflow-hidden transition-shadow duration-150"
+        className="group cursor-pointer overflow-hidden transition-shadow duration-150"
         style={{
+          borderRadius: "20px",
           background: "#ffffff",
-          border: "1px solid #e5e1da",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+          border: "1px solid #efefef",
+          boxShadow: "rgba(239,239,239,0.55) 0px 2px 15px 0px",
         }}
       >
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h3
-                className="font-display text-lg text-[#1a1714] group-hover:text-[#2e2825] transition-colors leading-snug"
+                className="font-display text-lg text-[#171618] group-hover:text-[#2a2a2c] transition-colors leading-snug"
                 style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
               >
                 {font.font_name}
               </h3>
               {font.vendor_name && (
                 <p
-                  className="text-[0.68rem] text-[#a8a09a] mt-0.5 uppercase tracking-wider"
+                  className="text-[0.68rem] text-[#9e9ea3] mt-0.5 uppercase tracking-wider"
                   style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                 >
                   {font.vendor_name}
@@ -463,7 +467,7 @@ function BrowseFontCard({ font }: { font: BrowseFont }) {
           </div>
 
           {font.simplified_summary && (
-            <p className="text-xs text-[#7a7268] mt-3 leading-relaxed line-clamp-2">
+            <p className="text-xs text-[#727578] mt-3 leading-relaxed line-clamp-2">
               {font.simplified_summary}
             </p>
           )}
