@@ -706,6 +706,14 @@ const GOOGLE_FONTS_PREVIEW_MAP: Record<string, string> = {
   "Soleil": "Source Sans 3",
   "Stabil Grotesk": "Inter",
   "Stratos": "Inter",
+
+  // ── Newly added fonts ─────────────────────────────────────────────────────
+  "Google Sans": "DM Sans",
+  "Google Sans Flex": "DM Sans",
+  "TT Firs": "DM Sans",
+  "Exposure": "Playfair Display",
+  "Nassim": "Noto Nastaliq Urdu",
+  "Amandine": "Playfair Display",
 };
 
 export default function FontSpecimen({
