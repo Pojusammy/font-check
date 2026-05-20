@@ -708,8 +708,8 @@ const GOOGLE_FONTS_PREVIEW_MAP: Record<string, string> = {
   "Stratos": "Inter",
 
   // ── Newly added fonts ─────────────────────────────────────────────────────
-  "Google Sans": "DM Sans",
-  "Google Sans Flex": "DM Sans",
+  "Google Sans": "Google Sans",
+  "Google Sans Flex": "Google Sans Flex",
   "TT Firs": "DM Sans",
   "Exposure": "Playfair Display",
   "Nassim": "Noto Nastaliq Urdu",
